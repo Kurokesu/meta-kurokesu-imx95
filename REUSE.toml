@@ -1,0 +1,45 @@
+version = 1
+
+# Markdown and binary assets, annotated here instead of in-file headers.
+
+[[annotations]]
+path = [
+ "README.md",
+ "RELEASING.md",
+ "recipes-multimedia/kurokesu-camera/files/kurokesu-camera32x32.png",
+]
+SPDX-FileCopyrightText = "2026 UAB Kurokesu"
+SPDX-License-Identifier = "MIT"
+
+# Recipes and config without in-file headers by Yocto/kernel convention.
+[[annotations]]
+path = [
+ "conf/layer.conf",
+ "recipes-kernel/linux/linux-compulab_%.bbappend",
+ "recipes-multimedia/libcamera/libcamera_%.bbappend",
+ "recipes-multimedia/kurokesu-camera/kurokesu-camera_1.0.bb",
+ "recipes-kernel/linux/linux-compulab/imx462.cfg",
+]
+SPDX-FileCopyrightText = "2026 UAB Kurokesu"
+SPDX-License-Identifier = "MIT"
+
+# Kernel patches carry license of the code they modify.
+[[annotations]]
+path = "recipes-kernel/linux/linux-compulab/*.patch"
+SPDX-FileCopyrightText = ["Linux kernel contributors", "2026 UAB Kurokesu"]
+SPDX-License-Identifier = "GPL-2.0-only"
+
+# libcamera patches: IPA/pipeline code is LGPL, tuning data is CC0,
+# same as upstream libcamera.
+[[annotations]]
+path = [
+ "recipes-multimedia/libcamera/libcamera/0001-ipa-nxp-cam_helper-Add-Sony-IMX462-camera-helper.patch",
+ "recipes-multimedia/libcamera/libcamera/0003-pipeline-nxp-neo-Select-mono-tuning-file-by-CFA-pattern.patch",
+]
+SPDX-FileCopyrightText = "2026 UAB Kurokesu"
+SPDX-License-Identifier = "LGPL-2.1-or-later"
+
+[[annotations]]
+path = "recipes-multimedia/libcamera/libcamera/0002-ipa-nxp-neo-Add-IMX462-tuning-data.patch"
+SPDX-FileCopyrightText = "2026 UAB Kurokesu"
+SPDX-License-Identifier = "CC0-1.0"
