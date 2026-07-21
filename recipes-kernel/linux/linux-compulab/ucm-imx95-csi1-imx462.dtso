@@ -1,0 +1,6 @@
+// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
+// SPDX-FileCopyrightText: 2026 UAB Kurokesu
+/* IMX462 colour, CSI1 */
+
+#include "overlay95.h"
+#include "ucm-imx95-csi1-imx462.dtsi"

@@ -1,0 +1,7 @@
+// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
+// SPDX-FileCopyrightText: 2026 UAB Kurokesu
+/* IMX462 mono, CSI2 */
+
+#include "overlay95.h"
+#define CAM_MONO
+#include "ucm-imx95-csi2-imx462.dtsi"

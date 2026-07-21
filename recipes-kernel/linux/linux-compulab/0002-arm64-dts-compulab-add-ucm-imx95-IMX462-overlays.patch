@@ -1,0 +1,37 @@
+From 5da734086750e8ef32226c835b828cd406fb1fa1 Mon Sep 17 00:00:00 2001
+From: Danius Kalvaitis <danius@kurokesu.com>
+Date: Mon, 20 Jul 2026 09:30:00 +0300
+Subject: [PATCH 2/2] arm64: dts: compulab: add ucm-imx95 IMX462 overlays
+
+Upstream-Status: Inappropriate [CompuLab vendor kernel specific]
+---
+ arch/arm64/boot/dts/compulab/Makefile.ucm-imx95 | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/compulab/Makefile.ucm-imx95 b/arch/arm64/boot/dts/compulab/Makefile.ucm-imx95
+index fc2df8f30621..8e8a5e6b29c0 100644
+--- a/arch/arm64/boot/dts/compulab/Makefile.ucm-imx95
++++ b/arch/arm64/boot/dts/compulab/Makefile.ucm-imx95
+@@ -10,6 +10,19 @@ dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-lvds.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-wm8962.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-rpmsg.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-spidev.dtbo
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi1-imx462.dtbo
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi1-imx462-mono.dtbo
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi2-imx462.dtbo
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi2-imx462-mono.dtbo
++
++ucm-imx95-csi1-imx462-dtbs := ucm-imx95.dtb ucm-imx95-csi1-imx462.dtbo
++ucm-imx95-csi1-imx462-mono-dtbs := ucm-imx95.dtb ucm-imx95-csi1-imx462-mono.dtbo
++ucm-imx95-csi2-imx462-dtbs := ucm-imx95.dtb ucm-imx95-csi2-imx462.dtbo
++ucm-imx95-csi2-imx462-mono-dtbs := ucm-imx95.dtb ucm-imx95-csi2-imx462-mono.dtbo
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi1-imx462.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi1-imx462-mono.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi2-imx462.dtb
++dtb-$(CONFIG_ARCH_MXC) += ucm-imx95-csi2-imx462-mono.dtb
+ 
+ # A modern style -- all overlayed
+ ucm-imx95-evk-dtbs := ucm-imx95-som.dtb \
+-- 
+2.34.1
+

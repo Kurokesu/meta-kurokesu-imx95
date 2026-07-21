@@ -1,0 +1,165 @@
+// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
+// SPDX-FileCopyrightText: 2026 UAB Kurokesu
+/*
+ * Sony IMX462 on CSI2 (EB-EVCAMRPI J2), UCM-iMX95.
+ * Included by csi2 .dtso wrappers. Define CAM_MONO for mono variant.
+ */
+
+&{/} {
+	cam2_xclk: clock-cam2-xclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <37125000>;
+		clock-output-names = "cam2_xclk";
+	};
+
+	cam2_vdda: regulator-cam2-vdda {
+		compatible = "regulator-fixed";
+		regulator-name = "cam2-vdda";
+		regulator-min-microvolt = <2900000>;
+		regulator-max-microvolt = <2900000>;
+		regulator-always-on;
+	};
+
+	cam2_vddd: regulator-cam2-vddd {
+		compatible = "regulator-fixed";
+		regulator-name = "cam2-vddd";
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+		regulator-always-on;
+	};
+
+	cam2_vdddo: regulator-cam2-vdddo {
+		compatible = "regulator-fixed";
+		regulator-name = "cam2-vdddo";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-always-on;
+	};
+};
+
+&lpi2c4 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	camera@1a {
+#ifdef CAM_MONO
+		compatible = "sony,imx462llr";
+#else
+		compatible = "sony,imx462lqr";
+#endif
+		reg = <0x1a>;
+		status = "okay";
+
+		orientation = <2>;
+		rotation = <0>;
+
+		clocks = <&cam2_xclk>;
+		clock-names = "xclk";
+		clock-frequency = <37125000>;
+
+		vdda-supply = <&cam2_vdda>;
+		vddd-supply = <&cam2_vddd>;
+		vdddo-supply = <&cam2_vdddo>;
+
+		reset-gpios = <&pca9555 11 GPIO_ACTIVE_LOW>;
+
+		port {
+			cam2_sensor_ep: endpoint {
+				remote-endpoint = <&cam2_csi_ep>;
+				data-lanes = <1 2 3 4>;
+				clock-lanes = <0>;
+				link-frequencies = /bits/ 64 <222750000 148500000>;
+			};
+		};
+	};
+};
+
+&display_stream_csr {
+	status = "disabled";
+};
+
+&display_master_csr {
+	status = "disabled";
+};
+
+&mipi_tx_phy_csr {
+	status = "disabled";
+};
+
+&mipi_dsi_intf {
+	status = "okay";
+};
+
+&combo_rx {
+	status = "okay";
+};
+
+&mipi_csi1 {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			cam2_csi_ep: endpoint {
+				remote-endpoint = <&cam2_sensor_ep>;
+				data-lanes = <1 2 3 4>;
+				clock-lanes = <0>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+			cam2_csi_out: endpoint {
+				remote-endpoint = <&cam2_fmt_in>;
+			};
+		};
+	};
+};
+
+&csi_pixel_formatter_1 {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			cam2_fmt_in: endpoint {
+				remote-endpoint = <&cam2_csi_out>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+			cam2_fmt_out: endpoint {
+				remote-endpoint = <&cam2_isi_in>;
+			};
+		};
+	};
+};
+
+&isi {
+	status = "okay";
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@3 {
+			reg = <3>;
+			cam2_isi_in: endpoint {
+				remote-endpoint = <&cam2_fmt_out>;
+			};
+		};
+	};
+};
+
+&neoisp0 {
+	status = "okay";
+};
