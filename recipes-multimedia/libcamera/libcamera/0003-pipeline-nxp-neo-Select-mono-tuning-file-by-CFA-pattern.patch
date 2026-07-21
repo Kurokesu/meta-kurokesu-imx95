@@ -1,0 +1,56 @@
+From 3aebb195e2fa0c2a2a1f3b23ae9a93d17f983e01 Mon Sep 17 00:00:00 2001
+From: Danius Kalvaitis <danius@kurokesu.com>
+Date: Mon, 20 Jul 2026 16:55:00 +0300
+Subject: [PATCH 3/3] pipeline: nxp: neo: Select mono tuning file by CFA
+ pattern
+
+imx290 driver names both IMX462LQR and IMX462LLR "imx462", so model
+name alone cannot select mono tuning. Append "_mono" when sensor CFA
+pattern is mono, mirroring Raspberry Pi pipeline handler.
+
+Upstream-Status: Inappropriate [NXP libcamera fork specific]
+---
+ .../pipeline/nxp/neo/neo_pipeline.cpp         | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/src/libcamera/pipeline/nxp/neo/neo_pipeline.cpp b/src/libcamera/pipeline/nxp/neo/neo_pipeline.cpp
+index 503d482..56508f3 100644
+--- a/src/libcamera/pipeline/nxp/neo/neo_pipeline.cpp
++++ b/src/libcamera/pipeline/nxp/neo/neo_pipeline.cpp
+@@ -2155,6 +2155,14 @@ int NxpNeoCameraData::updateControls()
+ 	return 0;
+ }
+ 
++static bool isMonoSensor(const CameraSensor *sensor)
++{
++	unsigned int mbusCode = sensor->mbusCodes()[0];
++	const BayerFormat &bayer = BayerFormat::fromMbusCode(mbusCode);
++
++	return bayer.order == BayerFormat::MONO;
++}
++
+ int NxpNeoCameraData::loadIPA()
+ {
+ 	ipa_ = IPAManager::createIPA<ipa::nxpneo::IPAProxyNxpNeo>(pipe(), 1, 1);
+@@ -2172,10 +2180,15 @@ int NxpNeoCameraData::loadIPA()
+ 		return ret;
+ 
+ 	/*
+-	 * The API tuning file is made from the sensor name. If the tuning file
+-	 * isn't found, fall back to the 'uncalibrated' file.
++	 * The IPA tuning file is made from the sensor name, with a "_mono"
++	 * suffix for monochrome sensors, following the Raspberry Pi tuning
++	 * file naming. If the tuning file isn't found, fall back to the
++	 * 'uncalibrated' file.
+ 	 */
+-	std::string ipaTuningFile = ipa_->configurationFile(sensor->model() + ".yaml");
++	std::string model = sensor->model();
++	if (isMonoSensor(sensor))
++		model += "_mono";
++	std::string ipaTuningFile = ipa_->configurationFile(model + ".yaml");
+ 	if (ipaTuningFile.empty())
+ 		ipaTuningFile = ipa_->configurationFile("uncalibrated.yaml");
+ 
+-- 
+2.34.1
+

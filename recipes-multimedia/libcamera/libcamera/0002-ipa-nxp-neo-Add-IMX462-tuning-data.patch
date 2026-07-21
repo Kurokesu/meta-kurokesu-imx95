@@ -1,0 +1,277 @@
+From 02058894db4d6cae4de44b38fcc3d0cef34b3047 Mon Sep 17 00:00:00 2001
+From: Danius Kalvaitis <danius@kurokesu.com>
+Date: Mon, 20 Jul 2026 10:27:10 +0300
+Subject: [PATCH 2/3] ipa: nxp: neo: Add IMX462 tuning data
+
+Add initial tuning file for Sony IMX462 enabling AWB, BLC, AGC, CCM,
+DRC (copy mode) and gamma. CCM table is from Raspberry Pi IMX462
+calibration until we produce our own.
+
+Add separate mono file for IMX462LLR without colour algorithms, using
+the "_mono" suffix from Raspberry Pi tuning naming.
+
+Upstream-Status: Inappropriate [NXP libcamera fork specific]
+---
+ src/ipa/nxp/neo/data/imx462.yaml      | 209 ++++++++++++++++++++++++++
+ src/ipa/nxp/neo/data/imx462_mono.yaml |  19 +++
+ src/ipa/nxp/neo/data/meson.build      |   2 +
+ 3 files changed, 230 insertions(+)
+ create mode 100644 src/ipa/nxp/neo/data/imx462.yaml
+ create mode 100644 src/ipa/nxp/neo/data/imx462_mono.yaml
+
+diff --git a/src/ipa/nxp/neo/data/imx462.yaml b/src/ipa/nxp/neo/data/imx462.yaml
+new file mode 100644
+index 0000000..a020ab5
+--- /dev/null
++++ b/src/ipa/nxp/neo/data/imx462.yaml
+@@ -0,0 +1,209 @@
++# SPDX-FileCopyrightText: 2019-2020 Raspberry Pi Ltd
++# SPDX-FileCopyrightText: 2026 UAB Kurokesu
++# SPDX-License-Identifier: BSD-2-Clause
++%YAML 1.1
++---
++# Initial parameters are derived from:
++# - IMX290/IMX462 datasheet values (black level)
++# - Raspberry Pi IMX462 tuning (src/ipa/rpi/pisp/data/imx462.json): CCM
++version: 1
++algorithms:
++  - Awb:
++  - BlackLevelCorrection:
++      # Black level 0x3C at 10-bit, as 16-bit offsets: 0x3C << 6 = 3840.
++      reference-bitdepth: 10
++      R: 3840
++      Gr: 3840
++      Gb: 3840
++      B: 3840
++  - Agc:
++  - Ccm:
++      # CCM table from Raspberry Pi IMX462 calibration (pisp imx462.json),
++      # interpolated by the AWB-estimated colour temperature.
++      ccms: [
++          {
++              ct: 2820,
++              ccm:
++              [
++                  1.93931, -0.47781, -0.46149,
++                  -0.80685, 2.51162, -0.70477,
++                  -0.09454, -1.45358, 2.54812,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 2865,
++              ccm:
++              [
++                  1.94246, -0.55124, -0.39122,
++                  -0.78361, 2.40473, -0.62111,
++                  -0.11531, -1.27787, 2.39318,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 2895,
++              ccm:
++              [
++                  1.94327, -0.54456, -0.39871,
++                  -0.79328, 2.40105, -0.60778,
++                  -0.10876, -1.29604, 2.40479,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 2906,
++              ccm:
++              [
++                  1.97118, -0.59105, -0.38013,
++                  -0.75994, 2.31847, -0.55853,
++                  -0.09992, -1.35216, 2.45208,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 2918,
++              ccm:
++              [
++                  2.06216, -0.63222, -0.42995,
++                  -0.60242, 2.06677, -0.46435,
++                  -0.03346, -1.75896, 2.79242,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 3587,
++              ccm:
++              [
++                  1.94068, -0.63318, -0.30749,
++                  -0.66311, 2.20775, -0.54464,
++                  -0.08091, -1.06356, 2.14446,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 3615,
++              ccm:
++              [
++                  1.96948, -0.66674, -0.30274,
++                  -0.66175, 2.15942, -0.49767,
++                  -0.07734, -1.02936, 2.10669,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 3620,
++              ccm:
++              [
++                  1.96032, -0.64845, -0.31187,
++                  -0.66439, 2.19693, -0.53254,
++                  -0.07931, -0.99342, 2.07273,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 3631,
++              ccm:
++              [
++                  1.95335, -0.64176, -0.31159,
++                  -0.67046, 2.21381, -0.54335,
++                  -0.07752, -1.00559, 2.08311,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 4330,
++              ccm:
++              [
++                  1.93342, -0.68988, -0.24354,
++                  -0.58033, 2.22555, -0.64522,
++                  -0.02843, -0.98497, 2.01341,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 4490,
++              ccm:
++              [
++                  1.91993, -0.66289, -0.25703,
++                  -0.59626, 2.26099, -0.66474,
++                  -0.03311, -0.88565, 1.91876,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 4535,
++              ccm:
++              [
++                  1.94301, -0.70807, -0.23493,
++                  -0.58322, 2.22932, -0.64611,
++                  -0.02783, -0.90947, 1.93731,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 4580,
++              ccm:
++              [
++                  1.95379, -0.71008, -0.24371,
++                  -0.57399, 2.21945, -0.64546,
++                  -0.04161, -0.88852, 1.93014,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 5640,
++              ccm:
++              [
++                  1.94452, -0.67353, -0.27099,
++                  -0.54171, 2.11661, -0.57489,
++                  -0.07599, -0.72696, 1.80296,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 5675,
++              ccm:
++              [
++                  1.94622, -0.68276, -0.26347,
++                  -0.53484, 2.10948, -0.57464,
++                  -0.07245, -0.72609, 1.79855,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 5700,
++              ccm:
++              [
++                  1.93628, -0.66435, -0.27193,
++                  -0.52401, 2.10331, -0.57931,
++                  -0.06978, -0.74412, 1.81389,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 5750,
++              ccm:
++              [
++                  1.93116, -0.66993, -0.26123,
++                  -0.53618, 2.12508, -0.58891,
++                  -0.07301, -0.71671, 1.78971,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++          {
++              ct: 6737,
++              ccm:
++              [
++                  1.97225, -0.45644, -0.51582,
++                  -0.56034, 2.58211, -1.02177,
++                  -0.15077, -0.89189, 2.04267,
++              ],
++              offsets: [ 0, 0, 0 ]
++          },
++      ]
++  - Drc:
++      # 0 = copy (no dynamic range compression)
++      gbl-mode: 0
++  - GammaOutCorrection:
++...
+diff --git a/src/ipa/nxp/neo/data/imx462_mono.yaml b/src/ipa/nxp/neo/data/imx462_mono.yaml
+new file mode 100644
+index 0000000..cc5c99b
+--- /dev/null
++++ b/src/ipa/nxp/neo/data/imx462_mono.yaml
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: CC0-1.0
++%YAML 1.1
++---
++# Colour algorithms (Awb, Ccm) are omitted, the mono pipeline needs none.
++version: 1
++algorithms:
++  - BlackLevelCorrection:
++      # Black level 0x3C at 10-bit, as 16-bit offsets: 0x3C << 6 = 3840.
++      reference-bitdepth: 10
++      R: 3840
++      Gr: 3840
++      Gb: 3840
++      B: 3840
++  - Agc:
++  - Drc:
++      # 0 = copy (no dynamic range compression)
++      gbl-mode: 0
++  - GammaOutCorrection:
++...
+diff --git a/src/ipa/nxp/neo/data/meson.build b/src/ipa/nxp/neo/data/meson.build
+index eaea4be..2922fea 100644
+--- a/src/ipa/nxp/neo/data/meson.build
++++ b/src/ipa/nxp/neo/data/meson.build
+@@ -1,6 +1,8 @@
+ # SPDX-License-Identifier: CC0-1.0
+ 
+ conf_files = files([
++    'imx462.yaml',
++    'imx462_mono.yaml',
+     'mx95mbcam.yaml',
+     'os08a20.yaml',
+     'ov5640.yaml',
+-- 
+2.34.1
+
