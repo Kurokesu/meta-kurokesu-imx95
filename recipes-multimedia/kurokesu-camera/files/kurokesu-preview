@@ -1,0 +1,35 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 UAB Kurokesu
+# SPDX-License-Identifier: MIT
+#
+# Kurokesu live preview: libcamera (NXP NEO-ISP) --> GStreamer --> Weston.
+# Panel icon tap toggles preview on/off.
+
+PIDFILE=/run/kurokesu-preview.pid
+
+if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+	kill "$(cat "$PIDFILE")"
+	rm -f "$PIDFILE"
+	exit 0
+fi
+rm -f "$PIDFILE"
+
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/0}"
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
+export LIBCAMERA_PIPELINES_MATCH_LIST="${LIBCAMERA_PIPELINES_MATCH_LIST:-nxp/neo}"
+
+# Prefer hardware G2D colour convert when available.
+if gst-inspect-1.0 imxvideoconvert_g2d >/dev/null 2>&1; then
+	CONV=imxvideoconvert_g2d
+else
+	CONV=videoconvert
+fi
+
+# $$ survives exec, so the pidfile keeps pointing at gst-launch.
+echo $$ > "$PIDFILE"
+exec gst-launch-1.0 -e \
+	libcamerasrc ! \
+	video/x-raw,width=1920,height=1080,format=NV12,framerate=30/1 ! \
+	queue max-size-buffers=2 leaky=downstream ! \
+	"${CONV}" ! \
+	waylandsink sync=false max-lateness=-1

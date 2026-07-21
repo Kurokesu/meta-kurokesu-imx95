@@ -1,0 +1,36 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2026 UAB Kurokesu
+# SPDX-License-Identifier: MIT
+#
+# Capture a single still through NEO-ISP.
+# Usage: kurokesu-still [-o] [output.jpg] [WIDTHxHEIGHT]
+#
+# Stream a short burst so AE/AWB converge, save the last frame.
+
+[ "$1" = "-o" ] && shift
+OUT="${1:-/tmp/kurokesu-still.jpg}"
+SIZE="${2:-1920x1080}"
+W="${SIZE%x*}"
+H="${SIZE#*x}"
+FRAMES="${KUROKESU_STILL_FRAMES:-30}"
+
+export LIBCAMERA_PIPELINES_MATCH_LIST="${LIBCAMERA_PIPELINES_MATCH_LIST:-nxp/neo}"
+
+# identity eos-after caps the burst, libcamerasrc lacks num-buffers.
+# multifilesink with fixed location keeps only the last frame.
+# jpegenc needs RGB/I420, so convert from NV12 first.
+if gst-inspect-1.0 imxvideoconvert_g2d >/dev/null 2>&1; then
+	CONV=imxvideoconvert_g2d
+else
+	CONV=videoconvert
+fi
+
+gst-launch-1.0 -q libcamerasrc ! \
+	"video/x-raw,width=$W,height=$H,format=NV12" ! \
+	identity eos-after="$FRAMES" ! \
+	queue max-size-buffers=4 leaky=downstream ! \
+	"$CONV" ! \
+	jpegenc quality=90 ! \
+	multifilesink location="$OUT" || exit 1
+
+echo "saved $OUT (${W}x${H})"
