@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 UAB Kurokesu
+#
+# SPDX-License-Identifier: MIT
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: fsfe/reuse-action@v6
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Shellcheck camera scripts
+        run: |
+          shellcheck \
+            recipes-multimedia/kurokesu-camera/files/kurokesu-still \
+            recipes-multimedia/kurokesu-camera/files/kurokesu-preview \
+            recipes-multimedia/kurokesu-camera/files/kurokesu-libcamera.sh
+
+  patches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # OE convention, every patch documents its upstream status.
+      - name: Check patches carry Upstream-Status
+        run: |
+          status=0
+          for patch in $(find recipes-* -name '*.patch'); do
+            if ! grep -q '^Upstream-Status:' "$patch"; then
+              echo "::error file=$patch::missing Upstream-Status tag"
+              status=1
+            fi
+          done
+          exit $status
