@@ -26,6 +26,14 @@ Install Docker and host tools:
 sudo apt install -y docker.io git zstd
 ```
 
+> [!IMPORTANT]
+> Ubuntu 24.04+ hosts restrict unprivileged user namespaces, which breaks
+> BitBake inside container. Lift restriction before building:
+>
+> ```bash
+> sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+> ```
+
 Clone yocker and build container image:
 
 ```bash
