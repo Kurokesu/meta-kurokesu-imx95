@@ -71,8 +71,8 @@ On headless systems add just `kurokesu-camera`.*
 Build image:
 
 ```bash
-bitbake imx-image-full
+bitbake -k imx-image-full
 ```
 
-*First build fetches tens of GB of sources and takes several hours.
-Rerun `bitbake` if a download fails.*
+*First build fetches tens of GB of sources and takes several hours. `-k`
+keeps going when a download flakes. Rerun `bitbake` to finish what failed.*
