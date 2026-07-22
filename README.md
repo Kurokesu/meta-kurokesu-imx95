@@ -47,6 +47,10 @@ source <(curl -L https://raw.githubusercontent.com/compulab-yokneam/meta-bsp-imx
 MACHINE=ucm-imx95 source compulab-setup-env build-ucm-imx95
 ```
 
+> [!NOTE]
+> Board-level build options (DRAM size, SoC revision, M7 firmware) are
+> covered in CompuLab [BSP README](https://github.com/compulab-yokneam/meta-bsp-imx95/blob/walnascar-6.12.34-2.1.0-EVAL-UCM-iMX95-2.0/README.md).
+
 Clone `meta-kurokesu-imx95` and register it:
 
 ```bash
