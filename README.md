@@ -76,3 +76,62 @@ bitbake -k imx-image-full
 
 *First build fetches tens of GB of sources and takes several hours. `-k`
 keeps going when a download flakes. Rerun `bitbake` to finish what failed.*
+
+## Flash
+
+Start from image deploy directory:
+
+```bash
+cd work/compulab-imx95-bsp/build-ucm-imx95/tmp/deploy/images/ucm-imx95
+```
+
+Pick flash target, SD card or eMMC.
+
+### SD card
+
+**Host**
+
+Find card device with `lsblk` and write image:
+
+```bash
+sudo zstd -dc imx-image-full-ucm-imx95.rootfs.wic.zst | sudo dd bs=1M status=progress of=/dev/sdX
+```
+
+**Target**
+
+- Power off
+- Insert card
+- Short alt-boot jumper (E3 on EVAL-UCM-iMX95)
+
+### eMMC
+
+**Target**
+
+- Power off
+- Connect USB cable to `Serial Download` microUSB port
+- Short SDP boot jumper (E4 on EVAL-UCM-iMX95)
+- Power on
+
+**Host**
+
+Get `uuu`:
+
+```bash
+sudo apt install -y libusb-1.0-0
+wget https://github.com/nxp-imx/mfgtools/releases/download/uuu_1.5.243/uuu
+chmod +x uuu
+```
+
+*Distro `uuu` cannot decompress `.wic.zst`, hence binary from NXP mfgtools releases is needed.*
+
+Flash over USB:
+
+```bash
+sudo ./uuu -v -bmap -b emmc_all imx-boot.tagged imx-image-full-ucm-imx95.rootfs.wic.zst
+```
+
+**Target**
+
+- Power off
+- Remove jumper
+
