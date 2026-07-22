@@ -135,3 +135,48 @@ sudo ./uuu -v -bmap -b emmc_all imx-boot.tagged imx-image-full-ucm-imx95.rootfs.
 - Power off
 - Remove jumper
 
+## Enable camera
+
+With target powered off, connect IMX462 to EB-EVCAMRPI adapter (J1 or J2).
+
+Power on.
+
+Log in, select matching overlay and reboot:
+
+```bash
+fw_setenv fdtofile ucm-imx95-csi1-imx462.dtbo
+reboot
+```
+
+Available overlays:
+
+| Overlay | Port | Chroma |
+|---|---|---|
+| `ucm-imx95-csi1-imx462.dtbo` | CSI1 | RGB |
+| `ucm-imx95-csi2-imx462.dtbo` | CSI2 | RGB |
+| `ucm-imx95-csi1-imx462-mono.dtbo` | CSI1 | MONO |
+| `ucm-imx95-csi2-imx462-mono.dtbo` | CSI2 | MONO |
+
+Dual camera is two overlays in the list:
+
+```bash
+fw_setenv fdtofile "ucm-imx95-csi1-imx462.dtbo ucm-imx95-csi2-imx462.dtbo"
+```
+
+After reboot, camera is a standard libcamera device. `cam`, GStreamer
+`libcamerasrc` and PipeWire work as usual:
+
+```bash
+export LIBCAMERA_PIPELINES_MATCH_LIST=nxp/neo
+cam --list
+cam --camera 1 --capture=10
+```
+
+*Export routes camera through NEO-ISP, `kurokesu-camera` package sets it
+system-wide.*
+
+With `kurokesu-camera` demo package:
+
+- Display: tap Kurokesu camera icon on Weston panel for live preview.
+  Tap again to close
+- Headless: run `kurokesu-still -o test.jpg`
