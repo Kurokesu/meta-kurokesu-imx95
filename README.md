@@ -157,11 +157,15 @@ Available overlays:
 | `ucm-imx95-csi1-imx462-mono.dtbo` | CSI1 | MONO |
 | `ucm-imx95-csi2-imx462-mono.dtbo` | CSI2 | MONO |
 
-Dual camera is two overlays in the list:
+Dual camera is two overlays from the list:
 
 ```bash
 fw_setenv fdtofile "ucm-imx95-csi1-imx462.dtbo ucm-imx95-csi2-imx462.dtbo"
 ```
+
+> [!NOTE]
+> In dual setup, libcamera orders cameras by i2c bus address, so CSI2
+> enumerates as `--camera 1` and CSI1 as `--camera 2`.
 
 After reboot, camera is a standard libcamera device. `cam`, GStreamer
 `libcamerasrc` and PipeWire work as usual:
