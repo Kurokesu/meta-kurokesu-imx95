@@ -122,21 +122,16 @@ sudo zstd -dc imx-image-full-ucm-imx95.rootfs.wic.zst | sudo dd bs=1M status=pro
 
 **Host**
 
-Get `uuu`:
+Install `uuu` and flash over USB:
 
 ```bash
-sudo apt install -y libusb-1.0-0
-wget https://github.com/nxp-imx/mfgtools/releases/download/uuu_1.5.243/uuu
-chmod +x uuu
+sudo apt install -y uuu
+sudo uuu -v -bmap -b emmc_all imx-boot.tagged imx-image-full-ucm-imx95.rootfs.wic.zst
 ```
 
-*Distro `uuu` cannot decompress `.wic.zst`, hence binary from NXP mfgtools releases is needed.*
-
-Flash over USB:
-
-```bash
-sudo ./uuu -v -bmap -b emmc_all imx-boot.tagged imx-image-full-ucm-imx95.rootfs.wic.zst
-```
+*`uuu` 1.5+ is needed to decompress `.wic.zst`. On distros packaging
+1.4.x (Ubuntu 22.04) use the binary from
+[NXP mfgtools releases](https://github.com/nxp-imx/mfgtools/releases).*
 
 **Target**
 
