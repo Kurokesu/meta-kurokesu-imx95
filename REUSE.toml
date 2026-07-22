@@ -5,7 +5,6 @@ version = 1
 [[annotations]]
 path = [
  "README.md",
- "RELEASING.md",
  "recipes-multimedia/kurokesu-camera/files/kurokesu-camera32x32.png",
 ]
 SPDX-FileCopyrightText = "2026 UAB Kurokesu"
